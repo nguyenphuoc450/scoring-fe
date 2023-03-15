@@ -36,7 +36,7 @@ const goBack = () => {
 .header__icon-back {
   position: absolute;
   top: 50%;
-  left: 0;
+  left: 16px;
   transform: translateY(-50%);
   cursor: pointer;
 }
