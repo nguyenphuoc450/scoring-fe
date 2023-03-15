@@ -1,5 +1,5 @@
 <script setup>
-import TableList from '~/components/Table/TableList.vue';
+import TableList from '@/components/Table/TableList.vue';
 
 </script>
 

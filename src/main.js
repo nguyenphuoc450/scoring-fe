@@ -2,7 +2,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-import '~/assets/scss/main.scss'
+import '@/assets/scss/main.scss'
 // Antdv
 import 'ant-design-vue/dist/antd.css'
 import Antdv from 'ant-design-vue'
