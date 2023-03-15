@@ -9,9 +9,9 @@ const router = createRouter({
 			component: () => import('@/views/HomeView.vue')
 		},
 		{
-			path: '/table/:id',
-			name: 'table',
-			component: () => import('@/views/TableView.vue')
+			path: '/match/:id',
+			name: 'match',
+			component: () => import('@/views/MatchView.vue')
 		}
 	]
 })

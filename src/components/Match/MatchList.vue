@@ -1,11 +1,11 @@
 <script setup>
-import TableItem from './TableItem.vue';
+import MatchItem from './MatchItem.vue';
 
 </script>
 
 <template>
-  <div class="table-list">
-    <TableItem />
+  <div class="match-list">
+    <MatchItem />
   </div>
 </template>
 

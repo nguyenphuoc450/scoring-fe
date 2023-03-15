@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="table-item">
+  <div class="match-item">
 
   </div>
 </template>

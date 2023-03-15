@@ -1,9 +1,9 @@
 <script setup>
-import TableList from '@/components/Table/TableList.vue';
+import MatchList from '@/components/Match/MatchList.vue';
 
 </script>
 
 <template>
   <a-button type="primary">Tạo bàn</a-button>
-  <TableList />
+  <MatchList />
 </template>
