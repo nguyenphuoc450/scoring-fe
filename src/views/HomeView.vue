@@ -64,7 +64,7 @@ const createMatch = () => {
     <a-modal :visible="state.isVisible" title="Tạo trận đấu" @ok="createMatch" @cancel="closeModal">
       <div class="form-players">
         <div class="input-group" v-for="(item, index) in state.players" :key="item.id">
-          <label for="">Player {{ index + 1 }}</label>
+          <label for="">Người chơi {{ index + 1 }}</label>
           <div class="input-group__control">
             <a-input v-model:value="item.name" placeholder="Enter" />
             <a-button style="height: 48px" type="danger" @click="removePlayer(item.id)">
