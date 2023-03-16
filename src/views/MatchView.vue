@@ -142,13 +142,15 @@ onMounted(() => {
           <td v-for="child in round" :key="child.id">
             {{ child.player.score }}
           </td>
-          <td style="display: flex; grid-gap: 16px; justify-content: center;">
-            <a-button type="primary" @click="editRound(index)">
-              Sửa
-            </a-button>
-            <a-button type="danger" @click="removeRound(index)">
-              Xóa
-            </a-button>
+          <td>
+            <div style="display: flex; grid-gap: 16px; justify-content: center;">
+              <a-button type="primary" @click="editRound(index)">
+                Sửa
+              </a-button>
+              <a-button type="danger" @click="removeRound(index)">
+                Xóa
+              </a-button>
+            </div>
           </td>
         </tr>
       </tbody>
