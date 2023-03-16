@@ -34,7 +34,7 @@ const closeModal = () => {
 const addNewPlayer = () => {
   const newPlayer = {
     id: uniqid(),
-    name: `player_${state.players.length + 1}`
+    name: ''
   }
   state.players = [...state.players, newPlayer]
 }
@@ -66,7 +66,7 @@ const createMatch = () => {
         <div class="input-group" v-for="(item, index) in state.players" :key="item.id">
           <label for="">Player {{ index + 1 }}</label>
           <div class="input-group__control">
-            <a-input v-model="value" placeholder="Enter" />
+            <a-input v-model:value="item.name" placeholder="Enter" />
             <a-button type="danger" @click="removePlayer(item.id)">
               <!-- <delete-outlined /> -->
               Xóa
