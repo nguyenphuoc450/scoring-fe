@@ -45,6 +45,13 @@ export default {
 					newMatchs.push(data)
 					break
 				case 'update':
+					newMatchs = newMatchs.map((match) => {
+						if (match.id === data.id) {
+							return data
+						} else {
+							return match
+						}
+					})
 					break
 				case 'remove':
 					newMatchs = newMatchs.filter((match) => match.id !== data.id)

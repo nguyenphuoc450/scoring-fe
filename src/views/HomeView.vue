@@ -4,7 +4,9 @@ import { reactive } from 'vue';
 import { useStore } from 'vuex';
 import uniqid from 'uniqid'
 import { DeleteOutlined } from '@ant-design/icons-vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter()
 const store = useStore()
 
 const state = reactive({
@@ -47,10 +49,12 @@ const createMatch = () => {
   const newMatch = {
     id: uniqid(),
     players: state.players,
+    rounds: [],
     created_at: Date.now()
   }
   store.dispatch('addNewMatch', newMatch)
   closeModal()
+  router.push({ name: 'match', params: { id: newMatch.id } })
 }
 
 </script>
@@ -61,12 +65,14 @@ const createMatch = () => {
       Tạo trận đấu
     </a-button>
 
-    <a-modal :visible="state.isVisible" title="Tạo trận đấu" @ok="createMatch" @cancel="closeModal">
+    <!-- Modal -->
+    <a-modal :visible="state.isVisible" title="Tạo trận đấu" okText="Tạo" cancelText="Hủy" @ok="createMatch"
+      @cancel="closeModal">
       <div class="form-players">
         <div class="input-group" v-for="(item, index) in state.players" :key="item.id">
           <label for="">Người chơi {{ index + 1 }}</label>
           <div class="input-group__control">
-            <a-input v-model:value="item.name" placeholder="Enter" />
+            <a-input v-model:value="item.name" placeholder="Nhập" />
             <a-button style="height: 48px" type="danger" @click="removePlayer(item.id)">
               <!-- <delete-outlined /> -->
               Xóa

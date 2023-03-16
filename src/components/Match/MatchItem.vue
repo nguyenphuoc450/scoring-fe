@@ -30,24 +30,41 @@ const removeMatch = () => {
 </script>
 
 <template>
-  <router-link :to="{ name: 'match', params: { id: data.id } }">
-    <a-card class="match-item">
-      <h3 class="name">Id: {{ data.id }}</h3>
-      <p class="created">Ngày tạo: {{ moment(data.created_at).format('DD/MM/YYYY HH:mm:ss') }}</p>
+  <a-card class="match-item">
+    <h3 class="name">Id: {{ data.id }}</h3>
+    <p class="created">Ngày tạo: {{ moment(data.created_at).format('DD/MM/YYYY HH:mm:ss') }}</p>
+    <div class="actions">
+      <a-button type="primary">
+        <router-link :to="{ name: 'match', params: { id: data.id } }">
+          Vào
+        </router-link>
+      </a-button>
       <a-button type="danger" @click="removeMatch">
         Xóa
       </a-button>
-    </a-card>
-  </router-link>
+    </div>
+  </a-card>
 </template>
 
 <style lang="scss" scoped>
 .match-item {
   flex: 1;
-  cursor: pointer;
 }
 
 .name {}
 
-.created {}
+.created {
+  font-style: italic;
+}
+
+.actions {
+  display: flex;
+  grid-gap: 16px;
+
+  button {
+    flex: 1;
+    padding: 6px 12px;
+    height: auto;
+  }
+}
 </style>

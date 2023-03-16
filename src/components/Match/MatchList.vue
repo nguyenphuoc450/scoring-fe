@@ -20,8 +20,8 @@ const matchs = computed(() => {
 <style lang="scss" scoped>
 .match-list {
   margin: 24px 0;
-  display: flex;
-  flex-wrap: wrap;
-  grid-gap: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 16px;
 }
 </style>
