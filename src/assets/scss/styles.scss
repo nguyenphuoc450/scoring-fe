@@ -5,8 +5,19 @@
 
 body {
   background-color: #18191a;
+  color: #ffffff;
 }
 
 .page {
   padding: 16px;
+}
+
+.input-group {
+  label {
+    display: block;
+    margin-bottom: 8px;
+  }
+  &:not(:last-child) {
+    margin-bottom: 16px;
+  }
 }

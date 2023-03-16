@@ -1,18 +1,31 @@
 <script setup>
 import { LeftOutlined } from '@ant-design/icons-vue'
-import { useRouter } from 'vue-router';
+import { reactive, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
 const router = useRouter()
+const route = useRoute()
+
+const state = reactive({
+  isShowIconBack: false
+})
 
 const goBack = () => {
   router.go(-1)
 }
 
+watch(() => route.path, () => {
+
+  if (route.name != 'home') {
+    state.isShowIconBack = true
+  }
+})
+
 </script>
 
 <template>
   <header class="header">
-    <div class="header__icon-back" @click="goBack" v-if="$route.name != 'home'">
+    <div class="header__icon-back" @click="goBack" v-if="state.isShowIconBack">
       <left-outlined style="font-size: 24px; color: #ffffff;" />
     </div>
     <router-link class="header__logo" :to="{ name: 'home' }">
