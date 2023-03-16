@@ -34,11 +34,10 @@ const handleRound = () => {
 
   const newRound = state.players.map(player => {
     return {
+      ...player,
+      score: player.score || 0,
       id: uniquid(),
-      player: {
-        ...player,
-        score: player.score || 0,
-      }
+      player_id: player.id
     }
   })
 
@@ -140,7 +139,7 @@ onMounted(() => {
             {{ index + 1 }}
           </td>
           <td v-for="child in round" :key="child.id">
-            {{ child.player.score }}
+            {{ child.score }}
           </td>
           <td>
             <div style="display: flex; grid-gap: 16px; justify-content: center;">
