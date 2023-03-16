@@ -67,7 +67,7 @@ const createMatch = () => {
           <label for="">Player {{ index + 1 }}</label>
           <div class="input-group__control">
             <a-input v-model:value="item.name" placeholder="Enter" />
-            <a-button type="danger" @click="removePlayer(item.id)">
+            <a-button style="height: 48px" type="danger" @click="removePlayer(item.id)">
               <!-- <delete-outlined /> -->
               Xóa
             </a-button>
