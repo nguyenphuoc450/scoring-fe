@@ -17,6 +17,7 @@ import Header from '@/components/common/Header.vue'
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.3s ease;
+  transform-origin: center;
 }
 
 .v-enter-from,
