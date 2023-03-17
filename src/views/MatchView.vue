@@ -135,34 +135,35 @@ const match = computed(() => {
 })
 
 watch(() => match.value, (currentValue) => {
+  if (currentValue) {
+    const cloneDataMatch = JSON.parse(JSON.stringify(match.value))
+    // Set players in match
+    state.players = [...cloneDataMatch.players] || []
 
-  const cloneDataRounds = JSON.parse(JSON.stringify(match.value)).rounds || []
-  const newDataPlayers = state.players.map(player => {
-    const dataListOfPlayer = []
-    // Find Player by id
-    cloneDataRounds.forEach(itemOfClone => {
-      const infoByPlayer = itemOfClone.info.find(itemOfInfo => itemOfInfo.player_id === player.id)
-      dataListOfPlayer.push(infoByPlayer)
+    const dataRounds = [...cloneDataMatch.rounds] || []
+
+    const newDataPlayers = state.players.map(player => {
+      const dataListOfPlayer = []
+      // Find Player by id
+      dataRounds.forEach(itemOfClone => {
+        const infoByPlayer = itemOfClone.info.find(itemOfInfo => itemOfInfo.player_id === player.id)
+        dataListOfPlayer.push(infoByPlayer)
+      })
+
+      const totalScore = dataListOfPlayer.reduce((prev, current) => {
+        return prev += current.score
+      }, 0)
+
+      return {
+        ...player,
+        totalScore
+      }
     })
 
-    const totalScore = dataListOfPlayer.reduce((prev, current) => {
-      return prev += current.score
-    }, 0)
-
-    return {
-      ...player,
-      totalScore
-    }
-  })
-
-  state.players = newDataPlayers
+    state.players = newDataPlayers
+  }
 
 }, { immediate: true, deep: true })
-
-
-onMounted(() => {
-  state.players = JSON.parse(JSON.stringify(match.value.players))
-})
 
 </script>
 
@@ -216,7 +217,7 @@ onMounted(() => {
             </div>
           </th>
           <th>
-            Khác
+            Nút
           </th>
         </tr>
       </thead>

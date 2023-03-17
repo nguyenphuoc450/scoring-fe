@@ -42,7 +42,7 @@ export default {
 
 			switch (type) {
 				case 'add':
-					newMatchs.push(data)
+					newMatchs.unshift(data)
 					break
 
 				case 'update':

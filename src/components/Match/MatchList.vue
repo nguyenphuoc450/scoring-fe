@@ -6,7 +6,7 @@ import MatchItem from './MatchItem.vue';
 const store = useStore()
 
 const matchs = computed(() => {
-  return store.getters.getMatchs.reverse()
+  return store.getters.getMatchs
 })
 
 </script>

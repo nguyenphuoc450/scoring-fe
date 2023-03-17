@@ -30,7 +30,7 @@ const removeMatch = () => {
 </script>
 
 <template>
-  <a-card class="match-item">
+  <div class="match-item">
     <h3 class="name">Id: {{ data.id }}</h3>
     <p class="created">Ngày tạo: {{ moment(data.created_at).format('DD/MM/YYYY HH:mm:ss') }}</p>
     <div class="actions">
@@ -43,17 +43,28 @@ const removeMatch = () => {
         Xóa
       </a-button>
     </div>
-  </a-card>
+  </div>
 </template>
 
 <style lang="scss" scoped>
 .match-item {
   flex: 1;
+  padding: 16px;
+  background: #ffffff;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+  border-radius: 8px;
 }
 
-.name {}
+.ant-card-body {
+  padding: 16px;
+}
+
+.name {
+  color: #343434;
+}
 
 .created {
+  color: #343434;
   font-style: italic;
 }
 

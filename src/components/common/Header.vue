@@ -15,9 +15,10 @@ const goBack = () => {
 }
 
 watch(() => route.path, () => {
-
   if (route.name != 'home') {
     state.isShowIconBack = true
+  } else {
+    state.isShowIconBack = false
   }
 })
 
