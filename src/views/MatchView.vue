@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, onMounted } from 'vue';
+import { computed, reactive, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import uniquid from 'uniqid'
@@ -12,7 +12,8 @@ const state = reactive({
   isVisibleCreate: false,
   isVisibleEdit: false,
   players: [],
-  currentRoundId: null
+  currentRoundId: null,
+  totalList: []
 })
 
 const resetScorePlayers = () => {
@@ -61,7 +62,7 @@ const openModalEdit = (id) => {
   state.players = state.players.map(player => {
     const round = match.value.rounds.find(item => item.id === id)
     const score = round.info.find(item => item.player_id === player.id).score || 0
-    console.log(round, score, id)
+
     return {
       ...player,
       score
@@ -133,6 +134,32 @@ const match = computed(() => {
   return store.getters.getMatchById(id)
 })
 
+watch(() => match.value, (currentValue) => {
+
+  const cloneDataRounds = JSON.parse(JSON.stringify(match.value)).rounds || []
+  const newDataPlayers = state.players.map(player => {
+    const dataListOfPlayer = []
+    // Find Player by id
+    cloneDataRounds.forEach(itemOfClone => {
+      const infoByPlayer = itemOfClone.info.find(itemOfInfo => itemOfInfo.player_id === player.id)
+      dataListOfPlayer.push(infoByPlayer)
+    })
+
+    const totalScore = dataListOfPlayer.reduce((prev, current) => {
+      return prev += current.score
+    }, 0)
+
+    return {
+      ...player,
+      totalScore
+    }
+  })
+
+  state.players = newDataPlayers
+
+}, { immediate: true, deep: true })
+
+
 onMounted(() => {
   state.players = JSON.parse(JSON.stringify(match.value.players))
 })
@@ -179,10 +206,17 @@ onMounted(() => {
             #
           </th>
           <th v-for="player in state.players" :key="player.id">
-            {{ player.name }}
+            <div style="display: flex; flex-direction: column; grid-gap: 4px;">
+              <span>{{ player.name }}</span>
+              <span
+                :style="{ color: player.totalScore < 0 ? '#ff4d4f' : player.totalScore > 0 ? '#52c41a' : '#000000d9' }"
+                v-if="player.totalScore">
+                ({{ (player.totalScore) }})
+              </span>
+            </div>
           </th>
           <th>
-            Hành động
+            Khác
           </th>
         </tr>
       </thead>
