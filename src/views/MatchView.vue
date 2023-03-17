@@ -12,15 +12,10 @@ const state = reactive({
   isVisibleCreate: false,
   isVisibleEdit: false,
   players: [],
+  currentRoundId: null
 })
 
-// Create
-const openModalCreate = () => {
-  state.isVisibleCreate = true
-}
-
-const closeModalCreate = () => {
-  state.isVisibleCreate = false
+const resetScorePlayers = () => {
   state.players = state.players.map(player => {
     return {
       ...player,
@@ -29,16 +24,27 @@ const closeModalCreate = () => {
   })
 }
 
-const createRound = () => {
-  const newRound = state.players.map(player => {
-    return {
-      ...player,
-      score: player.score || 0,
-      id: uniquid(),
-      player_id: player.id
-    }
-  })
+// Create
+const openModalCreate = () => {
+  state.isVisibleCreate = true
+}
 
+const closeModalCreate = () => {
+  state.isVisibleCreate = false
+  resetScorePlayers()
+}
+
+const createRound = () => {
+  const newRound = {
+    id: uniquid(),
+    info: state.players.map(player => {
+      return {
+        ...player,
+        score: player.score || 0,
+        player_id: player.id
+      }
+    })
+  }
 
   const newData = {
     ...match.value,
@@ -50,46 +56,70 @@ const createRound = () => {
 }
 
 // Edit
-const openModalEdit = () => {
+const openModalEdit = (id) => {
   state.isVisibleEdit = true
-}
-
-const closeModalEdit = () => {
-  state.isVisibleEdit = false
   state.players = state.players.map(player => {
-    return {
-      ...player,
-      score: null
-    }
-  })
-}
-
-const editRound = (index) => {
-  state.players = state.players.map(player => {
-    const score = match.value.rounds[index].find(item => item.player_id === player.id).score || 0
+    const round = match.value.rounds.find(item => item.id === id)
+    const score = round.info.find(item => item.player_id === player.id).score || 0
+    console.log(round, score, id)
     return {
       ...player,
       score
     }
   })
-  openModalCreate()
-  state.isEdit = true
+  state.currentRoundId = id
 }
 
-const removeRound = (index) => {
+const closeModalEdit = () => {
+  state.isVisibleEdit = false
+  resetScorePlayers()
+  state.currentRoundId = null
+}
+
+const editRoundById = () => {
+  const cloneData = [...match.value.rounds]
+  const indexRound = cloneData.findIndex(item => item.id === state.currentRoundId)
+
+  if (indexRound !== -1) {
+
+    const newInfo = cloneData[indexRound].info.map(item => {
+      const score = state.players.find(player => player.id === item.player_id).score || 0
+      return {
+        ...item,
+        score
+      }
+    })
+
+    const dataRound = {
+      ...cloneData[indexRound],
+      info: [...newInfo]
+    }
+    cloneData.splice(indexRound, 1, dataRound)
+
+    const newData = {
+      ...match.value,
+      rounds: [...cloneData]
+    }
+
+    store.dispatch('updateMatchById', newData)
+    closeModalEdit()
+  }
+}
+
+// Remove
+const removeRoundById = (id, index) => {
   Modal.confirm({
-    title: 'Xóa ván ' + index + 1,
+    title: 'Xóa ván ' + (index + 1),
     content: 'Bạn có muốn xóa không?',
     okText: 'Ok',
     cancelText: 'Không',
     onOk () {
-      // Delete by index
-      const newRounds = [...match.value.rounds]
-      newRounds.splice(index, 1)
+      // Delete by id
+      const cloneData = match.value.rounds.filter(item => item.id !== id)
 
       const newData = {
         ...match.value,
-        rounds: [...newRounds]
+        rounds: [...cloneData]
       }
 
       store.dispatch('updateMatchById', newData)
@@ -129,8 +159,8 @@ onMounted(() => {
     </a-modal>
 
     <!-- Modal edit -->
-    <a-modal :visible="state.isVisibleEdit" title="Sửa điểm" okText="Lưu" cancelText="Hủy" @ok="editRound"
-      @cancel="closeModalCreate">
+    <a-modal :visible="state.isVisibleEdit" title="Sửa điểm" okText="Lưu" cancelText="Hủy" @ok="editRoundById"
+      @cancel="closeModalEdit">
       <div class="form-players">
         <div class="input-group" v-for="item in state.players" :key="item.id">
           <label for="">{{ item.name }}</label>
@@ -162,15 +192,17 @@ onMounted(() => {
           <td>
             {{ index + 1 }}
           </td>
-          <td v-for="child in round" :key="child.id">
-            {{ child.score }}
+
+          <td v-for="itemInfo in round.info" :key="itemInfo.id">
+            {{ itemInfo.score }}
           </td>
+
           <td>
             <div style="display: flex; grid-gap: 16px; justify-content: center;">
-              <a-button type="primary" @click="editRound(index)">
+              <a-button type="primary" @click="openModalEdit(round.id)">
                 Sửa
               </a-button>
-              <a-button type="danger" @click="removeRound(index)">
+              <a-button type="danger" @click="removeRoundById(round.id, index)">
                 Xóa
               </a-button>
             </div>
@@ -184,26 +216,30 @@ onMounted(() => {
 
 
 <style lang="scss" scoped>
+.page {
+  overflow: auto;
+}
+
 .ant-input-number {
   width: 100%;
 }
 
 .table {
   margin-top: 16px;
-  width: 100%;
+  min-width: 100%;
 
   th {
-    padding: 6px;
+    padding: 6px 12px;
     font-weight: 700;
-    font-size: 24px;
-    line-height: 36px;
+    font-size: 16px;
+    line-height: 24px;
     color: #000000d9;
     border: 1px solid #f0f0f0;
     background-color: #fafafa;
   }
 
   td {
-    padding: 6px;
+    padding: 6px 12px;
     text-align: center;
     background: #ffffff;
     color: #000000d9;

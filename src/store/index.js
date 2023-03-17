@@ -44,6 +44,7 @@ export default {
 				case 'add':
 					newMatchs.push(data)
 					break
+
 				case 'update':
 					newMatchs = newMatchs.map((match) => {
 						if (match.id === data.id) {
@@ -53,6 +54,7 @@ export default {
 						}
 					})
 					break
+
 				case 'remove':
 					newMatchs = newMatchs.filter((match) => match.id !== data.id)
 					break
