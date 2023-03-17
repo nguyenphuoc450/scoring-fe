@@ -10,6 +10,6 @@ export default defineConfig({
 		alias: {
 			'@': fileURLToPath(new URL('./src', import.meta.url))
 		}
-	},
-	base: '/scoring' // deploy github page by name repository
+	}
+	// base: '/scoring' // deploy github page by name repository
 })
