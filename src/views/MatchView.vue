@@ -9,29 +9,27 @@ const route = useRoute()
 const store = useStore()
 
 const state = reactive({
-  isVisible: false,
+  isVisibleCreate: false,
+  isVisibleEdit: false,
   players: [],
-  isEdit: false
 })
 
-const openModal = () => {
-  state.isVisible = true
+// Create
+const openModalCreate = () => {
+  state.isVisibleCreate = true
 }
 
-const closeModal = () => {
-  state.isVisible = false
+const closeModalCreate = () => {
+  state.isVisibleCreate = false
   state.players = state.players.map(player => {
     return {
       ...player,
       score: null
     }
   })
-  state.isEdit = false
 }
 
-const handleRound = () => {
-  let newData = []
-
+const createRound = () => {
   const newRound = state.players.map(player => {
     return {
       ...player,
@@ -41,16 +39,29 @@ const handleRound = () => {
     }
   })
 
-  if (state.isEdit) {
 
-  } else {
-    newData = {
-      ...match.value,
-      rounds: [...match.value.rounds, newRound]
-    }
+  const newData = {
+    ...match.value,
+    rounds: [...match.value.rounds, newRound]
   }
+
   store.dispatch('updateMatchById', newData)
-  closeModal()
+  closeModalCreate()
+}
+
+// Edit
+const openModalEdit = () => {
+  state.isVisibleEdit = true
+}
+
+const closeModalEdit = () => {
+  state.isVisibleEdit = false
+  state.players = state.players.map(player => {
+    return {
+      ...player,
+      score: null
+    }
+  })
 }
 
 const editRound = (index) => {
@@ -61,7 +72,7 @@ const editRound = (index) => {
       score
     }
   })
-  openModal()
+  openModalCreate()
   state.isEdit = true
 }
 
@@ -100,13 +111,26 @@ onMounted(() => {
 
 <template>
   <div class="page">
-    <a-button style="display: block; margin: 0 auto;" type="primary" size="large" @click="openModal">
+    <a-button style="display: block; margin: 0 auto;" type="primary" size="large" @click="openModalCreate">
       Ghi điểm
     </a-button>
 
-    <!-- Modal -->
-    <a-modal :visible="state.isVisible" title="Ghi điểm" okText="Lưu" cancelText="Hủy" @ok="handleRound"
-      @cancel="closeModal">
+    <!-- Modal create -->
+    <a-modal :visible="state.isVisibleCreate" title="Ghi điểm" okText="Tạo" cancelText="Hủy" @ok="createRound"
+      @cancel="closeModalCreate">
+      <div class="form-players">
+        <div class="input-group" v-for="item in state.players" :key="item.id">
+          <label for="">{{ item.name }}</label>
+          <div class="input-group__control">
+            <a-input-number v-model:value="item.score" placeholder="Nhập" />
+          </div>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- Modal edit -->
+    <a-modal :visible="state.isVisibleEdit" title="Sửa điểm" okText="Lưu" cancelText="Hủy" @ok="editRound"
+      @cancel="closeModalCreate">
       <div class="form-players">
         <div class="input-group" v-for="item in state.players" :key="item.id">
           <label for="">{{ item.name }}</label>
