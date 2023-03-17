@@ -264,6 +264,7 @@ watch(() => match.value, (currentValue) => {
   min-width: 100%;
 
   th {
+    min-width: 120px;
     padding: 6px 12px;
     font-weight: 700;
     font-size: 16px;
@@ -271,13 +272,18 @@ watch(() => match.value, (currentValue) => {
     color: #000000d9;
     border: 1px solid #f0f0f0;
     background-color: #fafafa;
+    word-break: break-word;
+
+    &:first-child {
+      min-width: unset;
+    }
   }
 
   td {
     padding: 6px 12px;
-    text-align: center;
     background: #ffffff;
     color: #000000d9;
+    text-align: center;
     border: 1px solid #f0f0f0;
   }
 }
