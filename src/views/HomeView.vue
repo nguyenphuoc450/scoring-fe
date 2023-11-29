@@ -1,6 +1,6 @@
 <script setup>
 import MatchList from '@/components/Match/MatchList.vue';
-import { reactive } from 'vue';
+import { ref } from 'vue';
 import { useStore } from 'vuex';
 import uniqid from 'uniqid'
 import { DeleteOutlined } from '@ant-design/icons-vue';
@@ -9,23 +9,16 @@ import { useRouter } from 'vue-router';
 const router = useRouter()
 const store = useStore()
 
-const state = reactive({
-  isVisible: false,
-  players: [
-    {
-      id: uniqid(),
-      name: ''
-    }
-  ]
-})
+const isVisible = ref(false)
+const players = ref([])
 
 const openModal = () => {
-  state.isVisible = true
+  isVisible.value = true
 }
 
 const closeModal = () => {
-  state.isVisible = false
-  state.players = [
+  isVisible.value = false
+  players.value = [
     {
       id: uniqid(),
       name: ''
@@ -38,17 +31,17 @@ const addNewPlayer = () => {
     id: uniqid(),
     name: ''
   }
-  state.players = [...state.players, newPlayer]
+  players.value = [...players.value, newPlayer]
 }
 
 
 const removePlayer = (id) => {
-  state.players = state.players.filter(player => player.id !== id)
+  players.value = players.value.filter(player => player.id !== id)
 }
 const createMatch = () => {
   const newMatch = {
     id: uniqid(),
-    players: state.players,
+    players: players.value,
     rounds: [],
     created_at: Date.now()
   }
@@ -66,15 +59,14 @@ const createMatch = () => {
     </a-button>
 
     <!-- Modal -->
-    <a-modal :visible="state.isVisible" title="Tạo trận đấu" okText="Tạo" cancelText="Hủy" @ok="createMatch"
+    <a-modal :visible="isVisible" title="Tạo trận đấu" okText="Tạo" cancelText="Hủy" @ok="createMatch"
       @cancel="closeModal">
       <div class="form-players">
-        <div class="input-group" v-for="(item, index) in state.players" :key="item.id">
+        <div class="input-group" v-for="(item, index) in players" :key="item.id">
           <label for="">Người chơi {{ index + 1 }}</label>
           <div class="input-group__control">
             <a-input v-model:value="item.name" placeholder="Nhập" />
             <a-button style="height: 48px" type="danger" @click="removePlayer(item.id)">
-              <!-- <delete-outlined /> -->
               Xóa
             </a-button>
           </div>

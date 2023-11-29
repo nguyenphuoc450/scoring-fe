@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { useStore } from 'vuex';
 import uniquid from 'uniqid'
@@ -8,16 +8,19 @@ import { Modal } from 'ant-design-vue';
 const route = useRoute()
 const store = useStore()
 
-const state = reactive({
-  isVisibleCreate: false,
-  isVisibleEdit: false,
-  players: [],
-  currentRoundId: null,
-  totalList: []
+const isVisibleCreate = ref(false)
+const isVisibleEdit = ref(false)
+const players = ref([])
+const currentRoundId = ref(null)
+const totalList = ref([])
+
+const match = computed(() => {
+  const id = route.params.id
+  return store.getters.getMatchById(id)
 })
 
 const resetScorePlayers = () => {
-  state.players = state.players.map(player => {
+  players.value = players.value.map(player => {
     return {
       ...player,
       score: null
@@ -27,18 +30,18 @@ const resetScorePlayers = () => {
 
 // Create
 const openModalCreate = () => {
-  state.isVisibleCreate = true
+  isVisibleCreate.value = true
 }
 
 const closeModalCreate = () => {
-  state.isVisibleCreate = false
+  isVisibleCreate.value = false
   resetScorePlayers()
 }
 
 const createRound = () => {
   const newRound = {
     id: uniquid(),
-    info: state.players.map(player => {
+    info: players.value.map(player => {
       return {
         ...player,
         score: player.score || 0,
@@ -58,8 +61,8 @@ const createRound = () => {
 
 // Edit
 const openModalEdit = (id) => {
-  state.isVisibleEdit = true
-  state.players = state.players.map(player => {
+  isVisibleEdit.value = true
+  players.value = players.value.map(player => {
     const round = match.value.rounds.find(item => item.id === id)
     const score = round.info.find(item => item.player_id === player.id).score || 0
 
@@ -68,23 +71,23 @@ const openModalEdit = (id) => {
       score
     }
   })
-  state.currentRoundId = id
+  currentRoundId.value = id
 }
 
 const closeModalEdit = () => {
-  state.isVisibleEdit = false
+  isVisibleEdit.value = false
   resetScorePlayers()
-  state.currentRoundId = null
+  currentRoundId.value = null
 }
 
 const editRoundById = () => {
   const cloneData = [...match.value.rounds]
-  const indexRound = cloneData.findIndex(item => item.id === state.currentRoundId)
+  const indexRound = cloneData.findIndex(item => item.id === currentRoundId.value)
 
   if (indexRound !== -1) {
 
     const newInfo = cloneData[indexRound].info.map(item => {
-      const score = state.players.find(player => player.id === item.player_id).score || 0
+      const score = players.value.find(player => player.id === item.player_id).score || 0
       return {
         ...item,
         score
@@ -129,20 +132,15 @@ const removeRoundById = (id, index) => {
   });
 }
 
-const match = computed(() => {
-  const id = route.params.id
-  return store.getters.getMatchById(id)
-})
-
 watch(() => match.value, (currentValue) => {
   if (currentValue) {
     const cloneDataMatch = JSON.parse(JSON.stringify(match.value))
     // Set players in match
-    state.players = [...cloneDataMatch.players] || []
+    players.value = [...cloneDataMatch.players] || []
 
     const dataRounds = [...cloneDataMatch.rounds] || []
 
-    const newDataPlayers = state.players.map(player => {
+    const newDataPlayers = players.value.map(player => {
       const dataListOfPlayer = []
       // Find Player by id
       dataRounds.forEach(itemOfClone => {
@@ -160,7 +158,7 @@ watch(() => match.value, (currentValue) => {
       }
     })
 
-    state.players = newDataPlayers
+    players.value = newDataPlayers
   }
 
 }, { immediate: true, deep: true })
@@ -174,10 +172,10 @@ watch(() => match.value, (currentValue) => {
     </a-button>
 
     <!-- Modal create -->
-    <a-modal :visible="state.isVisibleCreate" title="Ghi điểm" okText="Tạo" cancelText="Hủy" @ok="createRound"
+    <a-modal :visible="isVisibleCreate" title="Ghi điểm" okText="Tạo" cancelText="Hủy" @ok="createRound"
       @cancel="closeModalCreate">
       <div class="form-players">
-        <div class="input-group" v-for="item in state.players" :key="item.id">
+        <div class="input-group" v-for="item in players" :key="item.id">
           <label for="">{{ item.name }}</label>
           <div class="input-group__control">
             <a-input-number v-model:value="item.score" placeholder="Nhập" />
@@ -187,10 +185,10 @@ watch(() => match.value, (currentValue) => {
     </a-modal>
 
     <!-- Modal edit -->
-    <a-modal :visible="state.isVisibleEdit" title="Sửa điểm" okText="Lưu" cancelText="Hủy" @ok="editRoundById"
+    <a-modal :visible="isVisibleEdit" title="Sửa điểm" okText="Lưu" cancelText="Hủy" @ok="editRoundById"
       @cancel="closeModalEdit">
       <div class="form-players">
-        <div class="input-group" v-for="item in state.players" :key="item.id">
+        <div class="input-group" v-for="item in players" :key="item.id">
           <label for="">{{ item.name }}</label>
           <div class="input-group__control">
             <a-input-number v-model:value="item.score" placeholder="Nhập" />
@@ -206,12 +204,11 @@ watch(() => match.value, (currentValue) => {
           <th>
             #
           </th>
-          <th v-for="player in state.players" :key="player.id">
+          <th v-for="player in players" :key="player.id">
             <div style="display: flex; flex-direction: column; grid-gap: 4px;">
               <span>{{ player.name }}</span>
               <span
-                :style="{ color: player.totalScore < 0 ? '#ff4d4f' : player.totalScore > 0 ? '#52c41a' : '#000000d9' }"
-                v-if="player.totalScore">
+                :style="{ color: player.totalScore < 0 ? '#ff4d4f' : player.totalScore > 0 ? '#52c41a' : '#000000d9' }">
                 ({{ (player.totalScore) }})
               </span>
             </div>
