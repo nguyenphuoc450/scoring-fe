@@ -1,10 +1,17 @@
 const KEY_MATCHS = 'matchs'
+import { createStore } from 'vuex'
 
-export default {
+const store = createStore({
 	state: {
+		user: {
+			token: localStorage.getItem('token') || null
+		},
 		matchs: JSON.parse(localStorage.getItem(KEY_MATCHS)) || []
 	},
 	getters: {
+		getUser: (state) => {
+			return state.user
+		},
 		getMatchs: (state) => {
 			return state.matchs
 		},
@@ -63,4 +70,6 @@ export default {
 			localStorage.setItem(KEY_MATCHS, JSON.stringify(newMatchs))
 		}
 	}
-}
+})
+
+export default store
